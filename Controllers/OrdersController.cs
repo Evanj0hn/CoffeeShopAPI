@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoffeeShopAPI.Data;
 using CoffeeShopAPI.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace CoffeeShopAPI.Controllers
 {
+    // This controller is responsible for managing orders in the coffee shop application.
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrdersController : ControllerBase
@@ -78,19 +82,47 @@ namespace CoffeeShopAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
+            // Get related user and menu item
+            var user = await _context.Users.FindAsync(order.UserId);
+            var menuItem = await _context.MenuItems.FindAsync(order.MenuItemId);
+
+            if (menuItem == null)
+            {
+                return BadRequest("Invalid MenuItemId.");
+            }
+
+            // Snapshot the drink name
+            order.Drink = menuItem.Name;
+
+            // Save order to DB
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Add loyalty points to user
-            var user = await _context.Users.FindAsync(order.UserId);
+            // Add loyalty points
             if (user != null)
             {
-                user.LoyaltyPoints += 10; // or customize logic
+                int pointsToAdd = (int)Math.Floor(menuItem.Price);
+                user.LoyaltyPoints += pointsToAdd;
                 await _context.SaveChangesAsync();
             }
 
             return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
         }
+
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateOrderStatus(int id, [FromQuery] string status)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
+                return NotFound();
+
+            order.Status = status;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Order {id} status updated to '{status}'." });
+        }
+
+
 
         // DELETE: api/Orders/5
         [HttpDelete("{id}")]
