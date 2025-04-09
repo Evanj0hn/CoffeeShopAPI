@@ -21,5 +21,12 @@ namespace CoffeeShopAPI.Data
                 .Property(m => m.Price)
                 .HasPrecision(10, 2); // Up to 99999999.99
         }
+
+        public DbSet<InventoryItem> InventoryItems { get; set; }
+
+        public DbSet<User> Users { get; set; }
+
+        public DbSet<Feedback> Feedbacks { get; set; }
+
     }
 }
