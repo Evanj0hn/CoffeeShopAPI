@@ -12,47 +12,47 @@ namespace CoffeeShopAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrdersController : ControllerBase
+    public class InventoryController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public OrdersController(ApplicationDbContext context)
+        public InventoryController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Orders
+        // GET: api/Inventory
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<InventoryItem>>> GetInventoryItems()
         {
-            return await _context.Orders.ToListAsync();
+            return await _context.InventoryItems.ToListAsync();
         }
 
-        // GET: api/Orders/5
+        // GET: api/Inventory/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        public async Task<ActionResult<InventoryItem>> GetInventoryItem(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var inventoryItem = await _context.InventoryItems.FindAsync(id);
 
-            if (order == null)
+            if (inventoryItem == null)
             {
                 return NotFound();
             }
 
-            return order;
+            return inventoryItem;
         }
 
-        // PUT: api/Orders/5
+        // PUT: api/Inventory/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, Order order)
+        public async Task<IActionResult> PutInventoryItem(int id, InventoryItem inventoryItem)
         {
-            if (id != order.Id)
+            if (id != inventoryItem.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(order).State = EntityState.Modified;
+            _context.Entry(inventoryItem).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace CoffeeShopAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!OrderExists(id))
+                if (!InventoryItemExists(id))
                 {
                     return NotFound();
                 }
@@ -73,44 +73,36 @@ namespace CoffeeShopAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Orders
+        // POST: api/Inventory
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public async Task<ActionResult<InventoryItem>> PostInventoryItem(InventoryItem inventoryItem)
         {
-            _context.Orders.Add(order);
+            _context.InventoryItems.Add(inventoryItem);
             await _context.SaveChangesAsync();
 
-            // Add loyalty points to user
-            var user = await _context.Users.FindAsync(order.UserId);
-            if (user != null)
-            {
-                user.LoyaltyPoints += 10; // or customize logic
-                await _context.SaveChangesAsync();
-            }
-
-            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+            return CreatedAtAction("GetInventoryItem", new { id = inventoryItem.Id }, inventoryItem);
         }
 
-        // DELETE: api/Orders/5
+        // DELETE: api/Inventory/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
+        public async Task<IActionResult> DeleteInventoryItem(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
+            var inventoryItem = await _context.InventoryItems.FindAsync(id);
+            if (inventoryItem == null)
             {
                 return NotFound();
             }
 
-            _context.Orders.Remove(order);
+            _context.InventoryItems.Remove(inventoryItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool OrderExists(int id)
+        private bool InventoryItemExists(int id)
         {
-            return _context.Orders.Any(e => e.Id == id);
+            return _context.InventoryItems.Any(e => e.Id == id);
         }
     }
 }
