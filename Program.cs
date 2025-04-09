@@ -96,6 +96,9 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Enable static file serving (for Frontend/Login.html etc.)
+app.UseStaticFiles(); 
+
 // Map API routes
 app.MapControllers();
 

@@ -17,4 +17,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Frontend\js\auth.js" />
+    <None Include="wwwroot\Frontend\Login.html" />
+  </ItemGroup>
+
 </Project>
