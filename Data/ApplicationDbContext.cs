@@ -28,5 +28,8 @@ namespace CoffeeShopAPI.Data
 
         public DbSet<Feedback> Feedbacks { get; set; }
 
+        public DbSet<Promotion> Promotions { get; set; }
+
+
     }
 }
