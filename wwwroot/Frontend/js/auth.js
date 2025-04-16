@@ -1,4 +1,4 @@
-﻿const API_BASE = "http://localhost:5208/api"; // Change port if needed
+﻿const API_BASE = "http://localhost:5208/api";
 
 async function login() {
     const email = document.getElementById("loginEmail").value;
@@ -17,6 +17,8 @@ async function login() {
         localStorage.setItem("token", data.token);
         msg.innerText = "Login successful!";
         msg.className = "text-success text-center mt-4";
+        // Redirect to the menu page after successful login
+        window.location.href = "http://localhost:5208/Frontend/menu.html";
     } else {
         msg.innerText = "Login failed. Check your credentials.";
         msg.className = "text-danger text-center mt-4";
