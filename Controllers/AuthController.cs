@@ -61,6 +61,9 @@ namespace CoffeeShopAPI.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.Key);
 
+            // Use current UTC time for token timestamps
+            var now = DateTime.UtcNow;
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -68,7 +71,10 @@ namespace CoffeeShopAPI.Controllers
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Email, user.Email)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
+                // Correctly setting the timestamps
+                NotBefore = now,
+                IssuedAt = now,
+                Expires = now.AddMinutes(_jwtSettings.DurationInMinutes),
                 Issuer = _jwtSettings.Issuer,
                 Audience = _jwtSettings.Audience,
                 SigningCredentials = new SigningCredentials(
